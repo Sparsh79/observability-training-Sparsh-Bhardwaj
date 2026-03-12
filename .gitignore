@@ -43,6 +43,3 @@ logs/
 prometheus-data/
 loki-data/
 grafana-data/
-
-# Screenshots (until you add them)
-screenshots/
