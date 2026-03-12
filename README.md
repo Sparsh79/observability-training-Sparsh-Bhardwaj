@@ -322,19 +322,3 @@ kill -9 <PID>
 1. Check Promtail is running: `docker logs promtail`
 2. Verify log file location in `promtail-config.yml`
 3. Check Loki API: `curl http://localhost:3100/ready`
-
-## Future Enhancements
-
-- Add distributed tracing with OpenTelemetry
-- Implement custom dashboards for business metrics
-- Add alerting rules in Prometheus
-- Integrate with ELK stack for advanced log analysis
-- Add performance testing with JMeter or Gatling
-
-## License
-
-This project is created for educational purposes as part of the observability training exercise.
-
-## Author
-
-NashTech Training Program - Day 1: Logs & Metrics Foundation
