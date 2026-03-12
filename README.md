@@ -214,19 +214,19 @@ http_server_requests_seconds_sum
 
 ### 1. Custom Prometheus Counter in Grafana
 
-![Custom Counter Metrics](screenshots/custom-counter-dashboard.png)
+![Custom Counter Metrics](day1-foundations-workshop/screenshots/custom-counter-dashboard.png)
 
 *Screenshot showing the `inventory_requests_total` counter grouped by status tag (success/error)*
 
 ### 2. Grafana Explore - Loki Logs
 
-![Loki Logs in Grafana](screenshots/grafana-loki-logs.png)
+![Loki Logs in Grafana](day1-foundations-workshop/screenshots/grafana-loki-logs.png)
 
 *Screenshot showing JSON structured logs queried from Loki in Grafana Explore view*
 
 ### 3. Terminal JSON Logs
 
-![Terminal JSON Logs](screenshots/terminal-json-logs.png)
+![Terminal JSON Logs](day1-foundations-workshop/screenshots/terminal-json-logs.png)
 
 *Screenshot of terminal showing raw JSON structured logs output by the application*
 
