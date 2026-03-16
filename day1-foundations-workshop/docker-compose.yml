@@ -41,6 +41,34 @@ services:
     depends_on:
       - loki
 
+  tempo:
+    image: grafana/tempo:2.3.0
+    container_name: tempo
+    ports:
+      - "3200:3200"
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./tempo-config.yaml:/etc/tempo.yaml:ro
+      - tempo-data:/var/tempo
+    networks:
+      - observability
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otel-collector
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "8888:8888"
+      - "8889:8889"
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    networks:
+      - observability
+    depends_on:
+      - tempo
+
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
@@ -58,6 +86,7 @@ services:
     depends_on:
       - prometheus
       - loki
+      - tempo
 
 networks:
   observability:
@@ -67,3 +96,4 @@ volumes:
   prometheus-data:
   loki-data:
   grafana-data:
+  tempo-data:

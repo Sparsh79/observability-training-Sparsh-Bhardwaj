@@ -4,6 +4,7 @@ import com.nashtech.inventory.model.InventoryItem;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import io.micrometer.observation.ObservationRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,11 +14,13 @@ class InventoryServiceTest {
 
     private InventoryService inventoryService;
     private MeterRegistry meterRegistry;
+    private ObservationRegistry observationRegistry;
 
     @BeforeEach
     void setUp() {
         meterRegistry = new SimpleMeterRegistry();
-        inventoryService = new InventoryService(meterRegistry);
+        observationRegistry = ObservationRegistry.create();
+        inventoryService = new InventoryService(meterRegistry, observationRegistry);
     }
 
     @Test

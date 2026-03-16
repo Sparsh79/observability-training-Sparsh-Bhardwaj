@@ -3,6 +3,8 @@ package com.nashtech.inventory.service;
 import com.nashtech.inventory.model.InventoryItem;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.observation.Observation;
+import io.micrometer.observation.ObservationRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,9 +20,11 @@ public class InventoryService {
     private final Map<String, InventoryItem> inventory;
     private final Random random;
     private final MeterRegistry meterRegistry;
+    private final ObservationRegistry observationRegistry;
 
-    public InventoryService(MeterRegistry meterRegistry) {
+    public InventoryService(MeterRegistry meterRegistry, ObservationRegistry observationRegistry) {
         this.meterRegistry = meterRegistry;
+        this.observationRegistry = observationRegistry;
         this.random = new Random();
         this.inventory = new HashMap<>();
         initializeInventory();
@@ -57,17 +61,30 @@ public class InventoryService {
             throw new RuntimeException("Simulated database connection failure for item: " + itemId);
         }
 
-        InventoryItem item = inventory.get(itemId);
-
-        if (item == null) {
-            logger.warn("Item not found with ID: {}", itemId);
-            incrementRequestCounter("error");
-            throw new IllegalArgumentException("Item not found: " + itemId);
-        }
+        // Validate inventory with custom span
+        InventoryItem item = validateInventory(itemId);
 
         logger.info("Successfully retrieved item: {} with quantity: {}", item.getName(), item.getQuantity());
         incrementRequestCounter("success");
         return item;
+    }
+
+    private InventoryItem validateInventory(String itemId) {
+        return Observation.createNotStarted("inventory.validation", observationRegistry)
+                .lowCardinalityKeyValue("item.id", itemId)
+                .observe(() -> {
+                    logger.debug("Validating inventory for itemId: {}", itemId);
+                    InventoryItem item = inventory.get(itemId);
+
+                    if (item == null) {
+                        logger.warn("Item not found with ID: {}", itemId);
+                        incrementRequestCounter("error");
+                        throw new IllegalArgumentException("Item not found: " + itemId);
+                    }
+
+                    logger.debug("Inventory validation successful for itemId: {}", itemId);
+                    return item;
+                });
     }
 
     private void incrementRequestCounter(String status) {
